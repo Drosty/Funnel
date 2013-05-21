@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Funnel", "Funnel.csproj", "{06FD9796-AFA3-48ED-A0A6-04D5F4CAC1D9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Funnel.Core", "Funnel.Core\Funnel.Core.csproj", "{06FD9796-AFA3-48ED-A0A6-04D5F4CAC1D9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
