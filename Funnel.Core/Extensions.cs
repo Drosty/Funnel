@@ -471,6 +471,12 @@ namespace Funnel
                     else
                     {
                         TypeConverter converter = TypeDescriptor.GetConverter(prop.PropertyType);
+                        if (reflected.Value is string)
+                        {
+                            if (String.IsNullOrEmpty(reflected.Value.ToString()))
+                                return;
+
+                        }
                         cach(empty, converter.ConvertFrom(reflected.Value));
                     }
                 }
@@ -480,7 +486,9 @@ namespace Funnel
             catch (Exception ex)
             {
                 if (throwException)
-                    throw;
+                {
+                    throw new Exception(String.Format("An Error occured while parsing a value for {0}",prop.Name),ex);
+                }
                 Debug.WriteLine(ex.ToString());
             }
         }
