@@ -24,7 +24,7 @@ PHOENIX          150     100       2      35LIGHT MECHANICAL     LIGHT   Protoss
 VOID RAY         250     150       3      60ARMORED MECHANICAL   ARMORED Protoss
 HIGH TEMPLAR      50     150       255 (45) LIGHT BIOLOGICAL PSION/A     Protoss
 DARK TEMPLAR      50     150       255 (45) LIGHT BIOLOGICAL PSION/A     Protoss
-ARCHON      N/A     N/A     N/A           12PSIONIC MASSIVE      BIOLOGICProtoss
+ARCHON                                    12PSIONIC MASSIVE      BIOLOGICProtoss
 CARRIER          350     250       6     120ARMORED MECHANICAL MAN/A     Protoss
 MOTHERSHIP       400     400       8     160ARMORED MECHANICAL PSN/A     Protoss
 DRONE             50       0       1      17LIGHT BIOLOGICAL     N/A     Zerg

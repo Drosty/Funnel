@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\StarcraftDataItem.cs" />
+    <Compile Include="Models\StarcraftModel.cs" />
     <Compile Include="ParsingTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

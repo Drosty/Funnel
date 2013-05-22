@@ -348,7 +348,7 @@ namespace Funnel
         /// <param name="csvArray">The IEnumerable of strings</param>
         /// <param name="delimiter">The delimeter</param>
         /// <returns>A 2D Enumerable of strings</returns>
-        public static IEnumerable<IEnumerable<string>> ParseFixedColumn(this IEnumerable<string> csvArray, params int[] columnWidths)
+        public static IEnumerable<IEnumerable<string>> ParseFixedWidth(this IEnumerable<string> csvArray, params int[] columnWidths)
         {
             foreach (string line in csvArray)
                 yield return ParseFixedColumnLine(line, columnWidths);
@@ -415,7 +415,10 @@ namespace Funnel
             int lastIndex = 0;
             foreach (var w in columnWidths)
             {
-                lineArray.Add(line.Substring(lastIndex, w).Trim(' '));
+                if(lastIndex+w>line.Length)
+                    lineArray.Add(line.Substring(lastIndex).Trim(' '));
+                else
+                    lineArray.Add(line.Substring(lastIndex, w).Trim(' '));
                 lastIndex += w;
             }
             return lineArray;
