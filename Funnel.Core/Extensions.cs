@@ -337,8 +337,7 @@ namespace Funnel
         /// <returns>A 2D Enumerable of strings</returns>
         public static IEnumerable<IEnumerable<string>> ParseCsv(this IEnumerable<string> csvArray, char delimiter)
         {
-            foreach (string line in csvArray)
-                yield return ParseCsvLine(line, delimiter);
+            return csvArray.Select(line => ParseCsvLine(line, delimiter));
         }
 
         /// <summary>
@@ -350,8 +349,7 @@ namespace Funnel
         /// <returns>A 2D Enumerable of strings</returns>
         public static IEnumerable<IEnumerable<string>> ParseFixedWidth(this IEnumerable<string> csvArray, params int[] columnWidths)
         {
-            foreach (string line in csvArray)
-                yield return ParseFixedColumnLine(line, columnWidths);
+            return csvArray.Select(line => ParseFixedColumnLine(line, columnWidths));
         }
 
         /// <summary>
@@ -371,8 +369,7 @@ namespace Funnel
             this IEnumerable<object> toReflectArray,
             BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance)
         {
-            foreach (object b in toReflectArray)
-                yield return b.ReflectSingle(bindingFlags);
+            return toReflectArray.Select(b => b.ReflectSingle(bindingFlags));
         }
 
         /// <summary>
@@ -558,10 +555,7 @@ namespace Funnel
         /// <returns>IEnumerable of Dictionaries</returns>
         public static IEnumerable<Dictionary<string, object>> IntoDictionary(this IEnumerable<ReflectionInfo> reflectionArray)
         {
-            foreach (var rInfo in reflectionArray)
-            {
-                yield return rInfo.IntoSingleDictionary();
-            }
+            return reflectionArray.Select(rInfo => rInfo.IntoSingleDictionary());
         }
 
         /// <summary>
