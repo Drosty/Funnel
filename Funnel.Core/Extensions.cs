@@ -47,11 +47,11 @@ namespace Funnel
                     Converter = converter
                 };
 
-            List<MappedColumn> col = null;
+            List<MappedColumn> col;
             if (rInfo.MappedColumns.TryGetValue(columnNameSource, out col))
                 col.Add(mapCol);
             else
-                rInfo.MappedColumns[columnNameSource] = new List<MappedColumn>() { mapCol };
+                rInfo.MappedColumns[columnNameSource] = new List<MappedColumn> { mapCol };
 
             return rInfo;
         }
@@ -112,8 +112,8 @@ namespace Funnel
             var empty = toUpdate;
             foreach (var reflected in reflectedArray)
             {
-                PropertyInfo prop = null;
-                List<MappedColumn> explicitMapping = null;
+                PropertyInfo prop;
+                List<MappedColumn> explicitMapping;
 
 
                 if (reflectedArray.MappedColumns.TryGetValue(reflected.Key.ToString(), out explicitMapping))
@@ -126,7 +126,8 @@ namespace Funnel
                             if (typeof(IMappingConverter).IsAssignableFrom(eMapping.Converter))
                             {
                                 var converter = Activator.CreateInstance(eMapping.Converter) as IMappingConverter;
-                                prop.SetValue(empty, converter.ConversionMethod(reflected.Value), null);
+                                if (converter != null)
+                                    prop.SetValue(empty, converter.ConversionMethod(reflected.Value), null);
                             }
                             else
                                 throw new Exception("Converter Type not a valid IMappingConverter");
@@ -200,17 +201,20 @@ namespace Funnel
         /// Uses each ReflectionInfo in the enumerable to generate a Datatable using the Type name as the table name,
         /// the properties as columns and the set of property values as rows.
         /// </summary>
-        /// <param name="reflectedArray">
+        /// <param name="reflectedItems">
         /// IEnumerable of ReflectionInfo Key/Value Set
         /// </param>
         /// <returns>
         /// DataTable populated with a row for each object
         /// </returns>
-        public static DataTable IntoTable(this IEnumerable<ReflectionInfo> reflectedArray)
+        public static DataTable IntoTable(this IEnumerable<ReflectionInfo> reflectedItems)
         {
-            var firstItem = reflectedArray.First();
+            var reflectedArray = reflectedItems.ToArray();
+            if(reflectedArray.Length==0)
+                throw new Exception("There are no items in the array");
+            var firstItem = reflectedArray[0];
             var dt = new DataTable(firstItem.SourceType != null ? firstItem.SourceType.Name : "DataTable");
-            foreach (var item in reflectedArray.First())
+            foreach (var item in reflectedArray[0])
             {
                 var dc = new DataColumn(item.Key.ToString(), item.Value != null ? item.Value.GetType() : typeof(object));
                 dt.Columns.Add(dc);
@@ -271,8 +275,8 @@ namespace Funnel
         /// </returns>
         public static IEnumerable<ReflectionInfo> MapArrayUsingHeader(this IEnumerable<IEnumerable<string>> csvArray)
         {
-            List<IEnumerable<string>> csvData = csvArray.ToList();
-            string[] header = csvData.First().ToArray();
+            var csvData = csvArray.ToList();
+            var header = csvData.First().ToArray();
             var rInfos = new List<ReflectionInfo>();
             foreach (var item in csvData.Skip(1))
             {
@@ -345,7 +349,7 @@ namespace Funnel
         /// it will not be seperated.
         /// </summary>
         /// <param name="csvArray">The IEnumerable of strings</param>
-        /// <param name="delimiter">The delimeter</param>
+        /// <param name="columnWidths">Array of column width</param>
         /// <returns>A 2D Enumerable of strings</returns>
         public static IEnumerable<IEnumerable<string>> ParseFixedWidth(this IEnumerable<string> csvArray, params int[] columnWidths)
         {
@@ -387,14 +391,14 @@ namespace Funnel
         public static ReflectionInfo ReflectSingle(
             this object toReflect, BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance)
         {
-            ReflectionInfo rInfo = null;
+            ReflectionInfo rInfo;
             var reflectType = toReflect.GetType();
-            PropertyInfo[] props = reflectType.GetProperties(bindingFlags);
+            var props = reflectType.GetProperties(bindingFlags);
             rInfo = new ReflectionInfo
                 {
                     SourceType = reflectType
                 };
-            foreach (PropertyInfo prop in props)
+            foreach (var prop in props)
             {
                 rInfo.Add(prop.Name, prop.GetValue(toReflect, new object[]
                     {
@@ -423,8 +427,8 @@ namespace Funnel
 
         private static IEnumerable<string> ParseCsvLine(string line, char delimiter)
         {
-            string csvLine = line.Trim();
-            bool inQuote = false;
+            var csvLine = line.Trim();
+            var inQuote = false;
             var lineArray = new List<string>();
             var currentEntry = new List<char>();
             foreach (char c in csvLine)
@@ -463,7 +467,7 @@ namespace Funnel
                     if (!CachedSetter.TryGetValue(prop, out cach))
                     {
                         var method = prop.GetSetMethod();
-                        cach = (Action<object, object>)BuildSetAccessor(method);
+                        cach = BuildSetAccessor(method);
                         CachedSetter[prop] = cach;
                     }
                     if (reflected.Value.GetType() == prop.PropertyType)
@@ -497,7 +501,7 @@ namespace Funnel
             var obj = Expression.Parameter(typeof(object), "o");
             var value = Expression.Parameter(typeof(object));
 
-            Expression<Action<object, object>> expr =
+            var expr =
                 Expression.Lambda<Action<object, object>>(
                     Expression.Call(
                         Expression.Convert(obj, method.DeclaringType),
@@ -531,7 +535,7 @@ namespace Funnel
             {
                 SourceType = toReflect.GetType()
             };
-            for (int i = 0; i < toReflect.Table.Columns.Count; i++)
+            for (var i = 0; i < toReflect.Table.Columns.Count; i++)
             {
                 rInfo.Add(toReflect.Table.Columns[i].ColumnName, toReflect[i]);
             }
