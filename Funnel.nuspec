@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+
+  <metadata>
+    <id>Funnel</id>
+    <version>1.0.1</version>
+    <authors>Jared Swarts</authors>
+    <owners>Jared Swarts</owners>
+    <licenseUrl>https://github.com/jaredswarts55/Funnel/blob/master/license.txt</licenseUrl>
+    <projectUrl>https://github.com/jaredswarts55/Funnel</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Data mapping utility to parse data files into objects.</description>
+    <summary>Data mapping utility</summary>
+    <releaseNotes>Fixing the nuget package.</releaseNotes>
+    <copyright>Copyright 2013</copyright>
+    <tags>Mapping Funnel</tags>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="System.Core" targetFramework="" />
+      <frameworkAssembly assemblyName="System" targetFramework="" />
+      <frameworkAssembly assemblyName="System.Data" targetFramework="" />
+      <frameworkAssembly assemblyName="Microsoft.CSharp" targetFramework=".NETFramework4.0-Client, .NETFramework4.0" />
+    </frameworkAssemblies>
+  </metadata>
+  <files>
+    <file src="Funnel.Core\bin\Release\Funnel.dll" target="lib\net40" />
+    <file src="Funnel.Core\bin\Release\Funnel.pdb" target="lib\net40" />
+    <file src="Funnel.Core\bin\Release\Funnel.xml" target="lib\net40" />
+  </files>
+</package>

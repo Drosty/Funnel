@@ -6,7 +6,7 @@
     <ProjectGuid>{06FD9796-AFA3-48ED-A0A6-04D5F4CAC1D9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <NoStandardLibraries>false</NoStandardLibraries>
-    <AssemblyName>ClassLibrary</AssemblyName>
+    <AssemblyName>Funnel</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -26,6 +26,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\Funnel.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <RootNamespace>Funnel</RootNamespace>
@@ -44,6 +45,7 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="IMappingConverter.cs" />
     <Compile Include="MappedColumn.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReflectionInfo.cs" />
     <Compile Include="TypeConversionMethodAttribute.cs" />
   </ItemGroup>
@@ -51,4 +53,12 @@
   <ProjectExtensions>
     <VisualStudio AllowExistingFolder="true" />
   </ProjectExtensions>
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
 </Project>
