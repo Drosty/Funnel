@@ -373,7 +373,7 @@ namespace Funnel
         /// <param name="csvArray">The IEnumerable of strings</param>
         /// <param name="delimiter">The delimeter</param>
         /// <returns>A 2D Enumerable of strings</returns>
-        public static IEnumerable<IEnumerable<string>> FunnelDelimited(this IEnumerable<string> csvArray, char delimiter)
+        public static IEnumerable<IEnumerable<string>> ParseDelimited(this IEnumerable<string> csvArray, char delimiter)
         {
             return csvArray.Select(line => FunnelDelimitedLine(line, delimiter));
         }
@@ -385,7 +385,7 @@ namespace Funnel
         /// <param name="csvArray">The IEnumerable of strings</param>
         /// <param name="columnWidths">Array of column width</param>
         /// <returns>A 2D Enumerable of strings</returns>
-        public static IEnumerable<IEnumerable<string>> FunnelFixedWidth(this IEnumerable<string> csvArray,
+        public static IEnumerable<IEnumerable<string>> ParseFixedWidth(this IEnumerable<string> csvArray,
                                                                        params int[] columnWidths)
         {
             return csvArray.Select(line => FunnelFixedColumnLine(line, columnWidths));

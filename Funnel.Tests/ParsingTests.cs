@@ -17,7 +17,7 @@ namespace Funnel.Tests
         public void ParseDelimited()
         {
             var starcraftData = File.ReadLines(@"Data\StarcraftData.csv")
-                                    .FunnelDelimited(',')
+                                    .ParseDelimited(',')
                                     .Funnel2DArrayUsingHeader()
                                     .IntoArrayOf<StarcraftDataItem>()
                                     .ToArray();
@@ -35,7 +35,7 @@ namespace Funnel.Tests
         public void ParseDelimitedUsingExplicitHeaders()
         {
             var starcraftData = File.ReadLines(@"Data\StarcraftData.csv")
-                                    .FunnelDelimited(',')
+                                    .ParseDelimited(',')
                                     .Funnel2DArray("Unit", "Mineral", "Gas", "Supply", "Time", "Type", "Bonus", "Race")
                                     .IntoArrayOf<StarcraftDataItem>()
                                     .ToArray();
@@ -53,7 +53,7 @@ namespace Funnel.Tests
         public void ParseFixedWidth()
         {
             var starcraftData = File.ReadLines(@"Data\StarcraftData.prn")
-                                    .FunnelFixedWidth(12,8,8,8,8,21,8,8)
+                                    .ParseFixedWidth(12,8,8,8,8,21,8,8)
                                     .Funnel2DArrayUsingHeader()
                                     .IntoArrayOf<StarcraftDataItem>()
                                     .ToArray();
