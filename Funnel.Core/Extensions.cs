@@ -210,7 +210,7 @@ namespace Funnel
         public static DataTable IntoTable(this IEnumerable<ReflectionInfo> reflectedItems)
         {
             var reflectedArray = reflectedItems.ToArray();
-            if(reflectedArray.Length==0)
+            if (reflectedArray.Length == 0)
                 throw new Exception("There are no items in the array");
             var firstItem = reflectedArray[0];
             var dt = new DataTable(firstItem.SourceType != null ? firstItem.SourceType.Name : "DataTable");
@@ -416,7 +416,7 @@ namespace Funnel
             int lastIndex = 0;
             foreach (var w in columnWidths)
             {
-                if(lastIndex+w>line.Length)
+                if (lastIndex + w > line.Length)
                     lineArray.Add(line.Substring(lastIndex).Trim(' '));
                 else
                     lineArray.Add(line.Substring(lastIndex, w).Trim(' '));
@@ -491,7 +491,7 @@ namespace Funnel
             {
                 if (throwException)
                 {
-                    throw new Exception(String.Format("An Error occured while parsing a value for {0}",prop.Name),ex);
+                    throw new Exception(String.Format("An Error occured while parsing a value for {0}", prop.Name), ex);
                 }
                 Debug.WriteLine(ex.ToString());
             }
@@ -579,34 +579,34 @@ namespace Funnel
         /// <returns>A dynamic object with properties corresponding to the reflection info.</returns>
         public static dynamic IntoDynamicSingle(this ReflectionInfo reflected)
         {
-            return new DynamicEntity(reflected.IntoSingleDictionary());
-            //foreach (var keyValuePair in reflected)
-            //{
-            //    KeyValuePair<object, object> tempReflected = keyValuePair; // Needs to happen or it could produce race conditions.
-            //    IEnumerable<MappedColumn> explicitMapping = reflected.MappedColumns.Where(x => x.Source == tempReflected.Key.ToString()).ToList();
-
-            //    if (explicitMapping.Any())
-            //    {
-            //        foreach (MappedColumn eMapping in explicitMapping)
-            //        {
-            //            if (eMapping.Converter != null)
-            //            {
-            //                if (typeof(IMappingConverter).IsAssignableFrom(eMapping.Converter))
-            //                {
-            //                    var converter = (IMappingConverter)Activator.CreateInstance(eMapping.Converter);
-            //                    dynamicObject[eMapping.Target] = converter.ConversionMethod(keyValuePair.Value.ToString());
-            //                }
-            //                else
-            //                    throw new Exception("Converter Type not a valid IMappingConverter");
-            //            }
-            //            else
-            //                dynamicObject[keyValuePair.Key.ToString()] = keyValuePair.Value;
-            //        }
-            //    }
-            //    else
-            //        dynamicObject[keyValuePair.Key.ToString()] = keyValuePair.Value;
-            //}
-            //return dynamicObject;
+            var dynamicObject = new DynamicEntity();
+            foreach (var keyValuePair in reflected)
+            {
+                var tempReflected = keyValuePair; // Needs to happen or it could produce race conditions.
+                var explicitMapping = reflected.MappedColumns.FirstOrDefault(x => (string) x.Key == tempReflected.Key.ToString());
+                
+                if (explicitMapping.Value!=null)
+                {
+                    foreach (var eMapping in explicitMapping.Value)
+                    {
+                        if (eMapping.Converter != null)
+                        {
+                            if (typeof(IMappingConverter).IsAssignableFrom(eMapping.Converter))
+                            {
+                                var converter = (IMappingConverter)Activator.CreateInstance(eMapping.Converter);
+                                dynamicObject[eMapping.Target] = converter.ConversionMethod(keyValuePair.Value.ToString());
+                            }
+                            else
+                                throw new Exception("Converter Type not a valid IMappingConverter");
+                        }
+                        else
+                            dynamicObject[keyValuePair.Key.ToString()] = keyValuePair.Value;
+                    }
+                }
+                else
+                    dynamicObject[keyValuePair.Key.ToString()] = keyValuePair.Value;
+            }
+            return dynamicObject;
         }
 
         #endregion

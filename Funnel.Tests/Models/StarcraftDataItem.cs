@@ -16,5 +16,6 @@ namespace Funnel.Tests.Models
         public string Type { get; set; }
         public string Bonus { get; set; }
         public string Race { get; set; }
+        public string Other { get; set; }
     }
 }

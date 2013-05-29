@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MappingTests.cs" />
     <Compile Include="Models\StarcraftDataItem.cs" />
     <Compile Include="Models\StarcraftModel.cs" />
     <Compile Include="ParsingTests.cs" />
