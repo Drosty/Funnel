@@ -3,7 +3,7 @@
 
   <metadata>
     <id>Funnel</id>
-    <version>1.0.1</version>
+    <version>1.1.0</version>
     <authors>Jared Swarts</authors>
     <owners>Jared Swarts</owners>
     <licenseUrl>https://github.com/jaredswarts55/Funnel/blob/master/license.txt</licenseUrl>
@@ -11,7 +11,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Data mapping utility to parse data files into objects.</description>
     <summary>Data mapping utility</summary>
-    <releaseNotes>Fixing the nuget package.</releaseNotes>
+    <releaseNotes>Fixed some bugs with IntoDynamic. Added new method MapArray.</releaseNotes>
     <copyright>Copyright 2013</copyright>
     <tags>Mapping Funnel</tags>
     <frameworkAssemblies>

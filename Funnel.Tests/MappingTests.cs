@@ -24,7 +24,7 @@ namespace Funnel.Tests
                 Unit = "Test"
             };
 
-            var starcraftDataItem = testObject.ReflectSingle().IntoSingle<StarcraftDataItem>();
+            var starcraftDataItem = testObject.Funnel().Into<StarcraftDataItem>();
 
             Assert.That(starcraftDataItem.Gas, Is.EqualTo(1));
             Assert.That(starcraftDataItem.Mineral, Is.EqualTo(2));
@@ -71,7 +71,7 @@ namespace Funnel.Tests
                         },
                 };
 
-            var starcraftDataItems = items.Reflect().Into<StarcraftDataItem>().ToArray();
+            var starcraftDataItems = items.FunnelArray().IntoArrayOf<StarcraftDataItem>().ToArray();
 
             Assert.That(starcraftDataItems.Length, Is.EqualTo(3));
 
@@ -113,7 +113,7 @@ namespace Funnel.Tests
                         },
                 };
 
-            var starcraftDataItems = items.Reflect().IntoDynamic().ToArray();
+            var starcraftDataItems = items.FunnelArray().IntoDynamics().ToArray();
 
             Assert.That(starcraftDataItems.Length, Is.EqualTo(3));
 
@@ -135,9 +135,9 @@ namespace Funnel.Tests
             };
 
             var starcraftDataItem = testObject
-                .ReflectSingle()
+                .Funnel()
                 .AddExplicitMapping("Unit","Other")
-                .IntoSingle<StarcraftDataItem>();
+                .Into<StarcraftDataItem>();
 
             Assert.That(starcraftDataItem.Gas, Is.EqualTo(1));
             Assert.That(starcraftDataItem.Mineral, Is.EqualTo(2));
@@ -164,9 +164,9 @@ namespace Funnel.Tests
             };
 
             var starcraftDataItem = testObject
-                .ReflectSingle()
+                .Funnel()
                 .AddExplicitMapping("Unit", "Other")
-                .IntoDynamicSingle();
+                .IntoDynamic();
 
             Assert.That(starcraftDataItem.Gas, Is.EqualTo(1));
             Assert.That(starcraftDataItem.Mineral, Is.EqualTo(2));

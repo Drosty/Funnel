@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Funnel")]
+[assembly: AssemblyTitle("FunnelArray")]
 [assembly: AssemblyDescription("Data Mapping Library")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Funnel.Properties")]
+[assembly: AssemblyProduct("FunnelArray.Properties")]
 [assembly: AssemblyCopyright("Jared Swarts 2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

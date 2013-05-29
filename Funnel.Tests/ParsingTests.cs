@@ -17,9 +17,9 @@ namespace Funnel.Tests
         public void ParseDelimited()
         {
             var starcraftData = File.ReadLines(@"Data\StarcraftData.csv")
-                                    .ParseDelimited(',')
-                                    .MapArrayUsingHeader()
-                                    .Into<StarcraftDataItem>()
+                                    .FunnelDelimited(',')
+                                    .Funnel2DArrayUsingHeader()
+                                    .IntoArrayOf<StarcraftDataItem>()
                                     .ToArray();
 
             Assert.That(starcraftData.Length, Is.EqualTo(41));
@@ -35,9 +35,9 @@ namespace Funnel.Tests
         public void ParseDelimitedUsingExplicitHeaders()
         {
             var starcraftData = File.ReadLines(@"Data\StarcraftData.csv")
-                                    .ParseDelimited(',')
-                                    .MapArray("Unit", "Mineral", "Gas", "Supply", "Time", "Type", "Bonus", "Race")
-                                    .Into<StarcraftDataItem>()
+                                    .FunnelDelimited(',')
+                                    .Funnel2DArray("Unit", "Mineral", "Gas", "Supply", "Time", "Type", "Bonus", "Race")
+                                    .IntoArrayOf<StarcraftDataItem>()
                                     .ToArray();
 
             Assert.That(starcraftData.Length, Is.EqualTo(41));
@@ -53,9 +53,9 @@ namespace Funnel.Tests
         public void ParseFixedWidth()
         {
             var starcraftData = File.ReadLines(@"Data\StarcraftData.prn")
-                                    .ParseFixedWidth(12,8,8,8,8,21,8,8)
-                                    .MapArrayUsingHeader()
-                                    .Into<StarcraftDataItem>()
+                                    .FunnelFixedWidth(12,8,8,8,8,21,8,8)
+                                    .Funnel2DArrayUsingHeader()
+                                    .IntoArrayOf<StarcraftDataItem>()
                                     .ToArray();
 
             Assert.That(starcraftData.Length, Is.EqualTo(41));

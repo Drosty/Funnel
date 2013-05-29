@@ -81,14 +81,14 @@ namespace Funnel
         /// <returns>
         ///     Enumerable of newly created instances of T
         /// </returns>
-        public static IEnumerable<T> Into<T>(
+        public static IEnumerable<T> IntoArrayOf<T>(
             this IEnumerable<ReflectionInfo> reflectedArray, bool ignoreCase = false, bool throwException = true,
             bool removeSourceUnderscores = false,
             BindingFlags bindingFlags = DefaultBindings)
         {
             return
                 reflectedArray.Select(
-                    reflect => reflect.IntoSingle<T>(ignoreCase, throwException, removeSourceUnderscores, bindingFlags));
+                    reflect => reflect.Into<T>(ignoreCase, throwException, removeSourceUnderscores, bindingFlags));
         }
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace Funnel
         /// <returns>
         ///     New instance of T
         /// </returns>
-        public static T UpdateSingle<T>(
+        public static T IntoExisting<T>(
             this ReflectionInfo reflectedArray, T toUpdate, bool ignoreCase = false, bool throwException = true,
             bool removeSourceUnderscores = false,
             BindingFlags bindingFlags = DefaultBindings)
@@ -179,13 +179,13 @@ namespace Funnel
         /// <returns>
         ///     New instance of T
         /// </returns>
-        public static T IntoSingle<T>(
+        public static T Into<T>(
             this ReflectionInfo reflectedArray, bool ignoreCase = false, bool throwException = true,
             bool removeSourceUnderscores = false,
             BindingFlags bindingFlags = DefaultBindings)
         {
             var empty = Activator.CreateInstance<T>();
-            return UpdateSingle(reflectedArray, empty, ignoreCase, throwException, removeSourceUnderscores, bindingFlags);
+            return IntoExisting(reflectedArray, empty, ignoreCase, throwException, removeSourceUnderscores, bindingFlags);
         }
 
         /// <summary>
@@ -265,12 +265,12 @@ namespace Funnel
         /// <returns>
         ///     Enumerable of ReflectionInfo Key / Value Set
         /// </returns>
-        public static IEnumerable<ReflectionInfo> Map<TReflected, TKey, TValue>(
+        public static IEnumerable<ReflectionInfo> FunnelArrayUsingSelector<TReflected, TKey, TValue>(
             this IEnumerable<IEnumerable<TReflected>> toMapArray,
             Func<TReflected, TKey> keySelector,
             Func<TReflected, TValue> valueSelector)
         {
-            return toMapArray.Select(map => MapSingle(map, keySelector, valueSelector));
+            return toMapArray.Select(map => FunnelUsingSelector(map, keySelector, valueSelector));
         }
 
         /// <summary>
@@ -282,7 +282,7 @@ namespace Funnel
         /// <returns>
         ///     An Enumerable of ReflectionInfos
         /// </returns>
-        public static IEnumerable<ReflectionInfo> MapArrayUsingHeader(this IEnumerable<IEnumerable<string>> csvArray)
+        public static IEnumerable<ReflectionInfo> Funnel2DArrayUsingHeader(this IEnumerable<IEnumerable<string>> csvArray)
         {
             var csvData = csvArray.ToList();
             var header = csvData.First().ToArray();
@@ -308,7 +308,7 @@ namespace Funnel
         /// <param name="csvArray">The csv array</param>
         /// <param name="headers">Array of header strings</param>
         /// <returns></returns>
-        public static IEnumerable<ReflectionInfo> MapArray(this IEnumerable<IEnumerable<string>> csvArray,params string[] headers)
+        public static IEnumerable<ReflectionInfo> Funnel2DArray(this IEnumerable<IEnumerable<string>> csvArray,params string[] headers)
         {
             var csvData = csvArray.ToList();
             var header = headers;
@@ -351,7 +351,7 @@ namespace Funnel
         /// <returns>
         ///     The Mapping.Extensions+ReflectionInfo.
         /// </returns>
-        public static ReflectionInfo MapSingle<TReflected, TKey, TValue>(
+        public static ReflectionInfo FunnelUsingSelector<TReflected, TKey, TValue>(
             this IEnumerable<TReflected> toMap,
             Func<TReflected, TKey> keySelector,
             Func<TReflected, TValue> valueSelector)
@@ -373,9 +373,9 @@ namespace Funnel
         /// <param name="csvArray">The IEnumerable of strings</param>
         /// <param name="delimiter">The delimeter</param>
         /// <returns>A 2D Enumerable of strings</returns>
-        public static IEnumerable<IEnumerable<string>> ParseDelimited(this IEnumerable<string> csvArray, char delimiter)
+        public static IEnumerable<IEnumerable<string>> FunnelDelimited(this IEnumerable<string> csvArray, char delimiter)
         {
-            return csvArray.Select(line => ParseDelimitedLine(line, delimiter));
+            return csvArray.Select(line => FunnelDelimitedLine(line, delimiter));
         }
 
         /// <summary>
@@ -385,10 +385,10 @@ namespace Funnel
         /// <param name="csvArray">The IEnumerable of strings</param>
         /// <param name="columnWidths">Array of column width</param>
         /// <returns>A 2D Enumerable of strings</returns>
-        public static IEnumerable<IEnumerable<string>> ParseFixedWidth(this IEnumerable<string> csvArray,
+        public static IEnumerable<IEnumerable<string>> FunnelFixedWidth(this IEnumerable<string> csvArray,
                                                                        params int[] columnWidths)
         {
-            return csvArray.Select(line => ParseFixedColumnLine(line, columnWidths));
+            return csvArray.Select(line => FunnelFixedColumnLine(line, columnWidths));
         }
 
         /// <summary>
@@ -404,9 +404,9 @@ namespace Funnel
         /// <returns>
         ///     Enumerable of ReflectionInfo Key / Value Set
         /// </returns>
-        public static IEnumerable<ReflectionInfo> Reflect(this IEnumerable<object> toReflectArray, BindingFlags bindingFlags = DefaultBindings)
+        public static IEnumerable<ReflectionInfo> FunnelArray(this IEnumerable<object> toReflectArray, BindingFlags bindingFlags = DefaultBindings)
         {
-            return toReflectArray.Select(b => b.ReflectSingle(bindingFlags));
+            return toReflectArray.Select(b => b.Funnel(bindingFlags));
         }
 
         /// <summary>
@@ -421,7 +421,7 @@ namespace Funnel
         /// <returns>
         ///     ReflectionInfo Key / Value Set
         /// </returns>
-        public static ReflectionInfo ReflectSingle(
+        public static ReflectionInfo Funnel(
             this object toReflect, BindingFlags bindingFlags = DefaultBindings)
         {
             var reflectType = toReflect.GetType();
@@ -439,7 +439,7 @@ namespace Funnel
 
         #region Methods
 
-        private static IEnumerable<string> ParseFixedColumnLine(string line, IEnumerable<int> columnWidths)
+        private static IEnumerable<string> FunnelFixedColumnLine(string line, IEnumerable<int> columnWidths)
         {
             var lineArray = new List<string>();
             int lastIndex = 0;
@@ -454,7 +454,7 @@ namespace Funnel
             return lineArray;
         }
 
-        private static IEnumerable<string> ParseDelimitedLine(string line, char delimiter)
+        private static IEnumerable<string> FunnelDelimitedLine(string line, char delimiter)
         {
             string csvLine = line.Trim();
             bool inQuote = false;
@@ -551,9 +551,9 @@ namespace Funnel
         /// <returns>
         ///     Returns an enumerable of <see cref="ReflectionInfo" /> objects, populated with data from the rows.
         /// </returns>
-        public static IEnumerable<ReflectionInfo> MapDataTable(this DataTable toReflectTable)
+        public static IEnumerable<ReflectionInfo> FunnelDataTable(this DataTable toReflectTable)
         {
-            return from DataRow toReflect in toReflectTable.Rows select toReflect.MapDataRow();
+            return from DataRow toReflect in toReflectTable.Rows select toReflect.FunnelDataRow();
         }
 
         /// <summary>
@@ -563,7 +563,7 @@ namespace Funnel
         /// <returns>
         ///     Returns an enumerable of <see cref="ReflectionInfo" /> objects, populated with data from the row
         /// </returns>
-        public static ReflectionInfo MapDataRow(this DataRow toReflect)
+        public static ReflectionInfo FunnelDataRow(this DataRow toReflect)
         {
             var rInfo = new ReflectionInfo
                 {
@@ -581,7 +581,7 @@ namespace Funnel
         /// </summary>
         /// <param name="reflected">The Reflection Info object to convert to a Dynamic object.</param>
         /// <returns>Dictionary</returns>
-        public static Dictionary<string, object> IntoSingleDictionary(this ReflectionInfo reflected)
+        public static Dictionary<string, object> IntoDictionary(this ReflectionInfo reflected)
         {
             return reflected.ToDictionary(x => x.Key.ToString(), x => x.Value);
         }
@@ -591,10 +591,10 @@ namespace Funnel
         /// </summary>
         /// <param name="reflectionArray">The reflected array to convert.</param>
         /// <returns>IEnumerable of Dictionaries</returns>
-        public static IEnumerable<Dictionary<string, object>> IntoDictionary(
+        public static IEnumerable<Dictionary<string, object>> IntoDictionaries(
             this IEnumerable<ReflectionInfo> reflectionArray)
         {
-            return reflectionArray.Select(rInfo => rInfo.IntoSingleDictionary());
+            return reflectionArray.Select(rInfo => rInfo.IntoDictionary());
         }
 
         /// <summary>
@@ -602,9 +602,9 @@ namespace Funnel
         /// </summary>
         /// <param name="reflectedArray">The reflected array to convert.</param>
         /// <returns>An enumerable of dynamic objects.</returns>
-        public static IEnumerable<dynamic> IntoDynamic(this IEnumerable<ReflectionInfo> reflectedArray)
+        public static IEnumerable<dynamic> IntoDynamics(this IEnumerable<ReflectionInfo> reflectedArray)
         {
-            return reflectedArray.Select(reflected => reflected.IntoDynamicSingle());
+            return reflectedArray.Select(reflected => reflected.IntoDynamic());
         }
 
         /// <summary>
@@ -612,7 +612,7 @@ namespace Funnel
         /// </summary>
         /// <param name="reflected">The Reflection Info object to convert to a Dynamic object.</param>
         /// <returns>A dynamic object with properties corresponding to the reflection info.</returns>
-        public static dynamic IntoDynamicSingle(this ReflectionInfo reflected)
+        public static dynamic IntoDynamic(this ReflectionInfo reflected)
         {
             var dynamicObject = new DynamicEntity();
             foreach (var keyValuePair in reflected)
