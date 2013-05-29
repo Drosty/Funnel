@@ -19,7 +19,7 @@ namespace Funnel.Tests
             var starcraftData = File.ReadLines(@"Data\StarcraftData.csv")
                                     .ParseDelimited(',')
                                     .Funnel2DArrayUsingHeader()
-                                    .IntoArrayOf<StarcraftDataItem>()
+                                    .IntoMany<StarcraftDataItem>()
                                     .ToArray();
 
             Assert.That(starcraftData.Length, Is.EqualTo(41));
@@ -37,7 +37,7 @@ namespace Funnel.Tests
             var starcraftData = File.ReadLines(@"Data\StarcraftData.csv")
                                     .ParseDelimited(',')
                                     .Funnel2DArray("Unit", "Mineral", "Gas", "Supply", "Time", "Type", "Bonus", "Race")
-                                    .IntoArrayOf<StarcraftDataItem>()
+                                    .IntoMany<StarcraftDataItem>()
                                     .ToArray();
 
             Assert.That(starcraftData.Length, Is.EqualTo(41));
@@ -55,7 +55,7 @@ namespace Funnel.Tests
             var starcraftData = File.ReadLines(@"Data\StarcraftData.prn")
                                     .ParseFixedWidth(12,8,8,8,8,21,8,8)
                                     .Funnel2DArrayUsingHeader()
-                                    .IntoArrayOf<StarcraftDataItem>()
+                                    .IntoMany<StarcraftDataItem>()
                                     .ToArray();
 
             Assert.That(starcraftData.Length, Is.EqualTo(41));

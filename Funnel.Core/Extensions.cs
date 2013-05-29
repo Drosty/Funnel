@@ -81,7 +81,7 @@ namespace Funnel
         /// <returns>
         ///     Enumerable of newly created instances of T
         /// </returns>
-        public static IEnumerable<T> IntoArrayOf<T>(
+        public static IEnumerable<T> IntoMany<T>(
             this IEnumerable<ReflectionInfo> reflectedArray, bool ignoreCase = false, bool throwException = true,
             bool removeSourceUnderscores = false,
             BindingFlags bindingFlags = DefaultBindings)

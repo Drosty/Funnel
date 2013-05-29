@@ -71,7 +71,7 @@ namespace Funnel.Tests
                         },
                 };
 
-            var starcraftDataItems = items.FunnelArray().IntoArrayOf<StarcraftDataItem>().ToArray();
+            var starcraftDataItems = items.FunnelArray().IntoMany<StarcraftDataItem>().ToArray();
 
             Assert.That(starcraftDataItems.Length, Is.EqualTo(3));
 
