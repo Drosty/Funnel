@@ -121,7 +121,7 @@ namespace Funnel.Tests
             Assert.That(starcraftDataItems[1].Supply, Is.EqualTo("2"));
         }
 
-        [Test(Description = "Test reflection using explicit mapping")]
+        [Test(Description = "Test reflection using explicit column mapping")]
         public void ReflectSingleWithExplicitMapping()
         {
             var testObject = new StarcraftModel
@@ -150,8 +150,8 @@ namespace Funnel.Tests
             Assert.That(starcraftDataItem.Type, Is.EqualTo(null));
         }
 
-        [Test(Description = "Test into dynamic using explicit mapping")]
-        public void ReflectIntoDynamicWithExplicitMapping()
+        [Test(Description = "Test into dynamic using explicit column mapping")]
+        public void ReflectIntoDynamicWithExplicitColumnMapping()
         {
             var testObject = new StarcraftModel
             {
@@ -173,10 +173,9 @@ namespace Funnel.Tests
             Assert.That(starcraftDataItem.Race, Is.EqualTo("Protoss"));
             Assert.That(starcraftDataItem.Supply, Is.EqualTo("1"));
             Assert.That(starcraftDataItem.Time, Is.EqualTo("20"));
+
             Assert.That(starcraftDataItem.Other, Is.EqualTo("Test"));
 
-            Assert.That(starcraftDataItem.Bonus, Is.EqualTo(null));
-            Assert.That(starcraftDataItem.Type, Is.EqualTo(null));
         }
     }
 }

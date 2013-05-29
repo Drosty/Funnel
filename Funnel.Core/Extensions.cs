@@ -11,34 +11,42 @@ using System.Text;
 namespace Funnel
 {
     /// <summary>
-    /// The data mapping extensions.
+    ///     The data mapping extensions.
     /// </summary>
     public static class Extensions
     {
+        private const BindingFlags DefaultBindings = BindingFlags.Public | BindingFlags.Instance;
+
         #region Public Methods and Operators
-        private static readonly Dictionary<PropertyInfo, Action<object, object>> CachedSetter = new Dictionary<PropertyInfo, Action<object, object>>();
+
+        private static readonly Dictionary<PropertyInfo, Action<object, object>> CachedSetter =
+            new Dictionary<PropertyInfo, Action<object, object>>();
+
         /// <summary>
-        /// Add explicit column/property mapping to the IEnumerable of reflected mapping sets
+        ///     Add explicit column/property mapping to the IEnumerable of reflected mapping sets
         /// </summary>
         /// <param name="rInfos">Reflection infos to add the mapping to</param>
         /// <param name="columnNameSource">Source Column/Property Name</param>
         /// <param name="columnNameTarget">Target Column/Property Name</param>
         /// <param name="converter">IMappingConverter type to use when converting</param>
         /// <returns>ReflectionInfo Object</returns>
-        public static IEnumerable<ReflectionInfo> AddExplicitMapping(this IEnumerable<ReflectionInfo> rInfos, string columnNameSource, string columnNameTarget, Type converter = null)
+        public static IEnumerable<ReflectionInfo> AddExplicitMapping(this IEnumerable<ReflectionInfo> rInfos,
+                                                                     string columnNameSource, string columnNameTarget,
+                                                                     Type converter = null)
         {
             return rInfos.Select(rInfo => rInfo.AddExplicitMapping(columnNameSource, columnNameTarget, converter));
         }
 
         /// <summary>
-        /// Add explicit column/property mapping to the reflected mapping set.
+        ///     Add explicit column/property mapping to the reflected mapping set.
         /// </summary>
         /// <param name="rInfo">Reflection info to add the mapping to</param>
         /// <param name="columnNameSource">Source Column/Property Name</param>
         /// <param name="columnNameTarget">Target Column/Property Name</param>
         /// <param name="converter">IMappingConverter type to use when converting</param>
         /// <returns>ReflectionInfo Object</returns>
-        public static ReflectionInfo AddExplicitMapping(this ReflectionInfo rInfo, string columnNameSource, string columnNameTarget, Type converter = null)
+        public static ReflectionInfo AddExplicitMapping(this ReflectionInfo rInfo, string columnNameSource,
+                                                        string columnNameTarget, Type converter = null)
         {
             var mapCol = new MappedColumn
                 {
@@ -57,13 +65,13 @@ namespace Funnel
         }
 
         /// <summary>
-        /// Uses each ReflectionInfo in the enumerable to generate an instance of the set type populating the data using reflection.
+        ///     Uses each ReflectionInfo in the enumerable to generate an instance of the set type populating the data using reflection.
         /// </summary>
         /// <typeparam name="T">
-        /// Object Type to create and populate
+        ///     Object Type to create and populate
         /// </typeparam>
         /// <param name="reflectedArray">
-        /// IEnumerable of ReflectionInfo Key/Value Set
+        ///     IEnumerable of ReflectionInfo Key/Value Set
         /// </param>
         /// <param name="ignoreCase">Ignore case on name matching if true</param>
         /// <param name="throwException">If populating a field match with a value fails throw an exception if true</param>
@@ -71,43 +79,43 @@ namespace Funnel
         /// <param name="bindingFlags">
         /// </param>
         /// <returns>
-        /// Enumerable of newly created instances of T
+        ///     Enumerable of newly created instances of T
         /// </returns>
         public static IEnumerable<T> Into<T>(
-            this IEnumerable<ReflectionInfo> reflectedArray, bool ignoreCase = false, bool throwException = true, bool removeSourceUnderscores = false,
-            BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance)
+            this IEnumerable<ReflectionInfo> reflectedArray, bool ignoreCase = false, bool throwException = true,
+            bool removeSourceUnderscores = false,
+            BindingFlags bindingFlags = DefaultBindings)
         {
-            return reflectedArray.Select(reflect => reflect.IntoSingle<T>(ignoreCase, throwException, removeSourceUnderscores, bindingFlags));
+            return
+                reflectedArray.Select(
+                    reflect => reflect.IntoSingle<T>(ignoreCase, throwException, removeSourceUnderscores, bindingFlags));
         }
 
         /// <summary>
-        /// Uses ReflectionInfo to generate an instance of the set type populating the data using reflection.
+        ///     Uses ReflectionInfo to generate an instance of the set type populating the data using reflection.
         /// </summary>
         /// <typeparam name="T">
-        /// Object Type to create and populate
+        ///     Object Type to create and populate
         /// </typeparam>
         /// <param name="reflectedArray">
-        /// ReflectionInfo Key/Value Set
+        ///     ReflectionInfo Key/Value Set
         /// </param>
         /// <param name="toUpdate">Object whose properties will be updated</param>
         /// <param name="ignoreCase">Ignore case on name matching if true</param>
         /// <param name="throwException">If populating a field match with a value fails throw an exception if true</param>
         /// <param name="removeSourceUnderscores">Remove underscores from property names in source if true</param>
         /// <param name="bindingFlags">
-        /// BindingFlags in GetProperties Command Defaults to Public
+        ///     BindingFlags in GetProperties Command Defaults to Public
         /// </param>
         /// <returns>
-        /// New instance of T
+        ///     New instance of T
         /// </returns>
         public static T UpdateSingle<T>(
-            this ReflectionInfo reflectedArray, T toUpdate, bool ignoreCase = false, bool throwException = true, bool removeSourceUnderscores = false, BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance)
+            this ReflectionInfo reflectedArray, T toUpdate, bool ignoreCase = false, bool throwException = true,
+            bool removeSourceUnderscores = false,
+            BindingFlags bindingFlags = DefaultBindings)
         {
-            Dictionary<string, PropertyInfo> props;
-
-            if (ignoreCase)
-                props = typeof(T).GetProperties(bindingFlags).ToDictionary(x => x.Name.ToLower());
-            else
-                props = typeof(T).GetProperties(bindingFlags).ToDictionary(x => x.Name);
+            var props = typeof(T).GetProperties(bindingFlags).ToDictionary(x => ignoreCase ? x.Name.ToLower() : x.Name);
 
             var empty = toUpdate;
             foreach (var reflected in reflectedArray)
@@ -138,55 +146,56 @@ namespace Funnel
                 }
                 else
                 {
-                    string keyName = reflected.Key.ToString().Replace(" ", "").Trim();
+                    var keyName = reflected.Key.ToString().Replace(" ", "").Trim();
+
                     if (removeSourceUnderscores)
                         keyName = keyName.Replace("_", "");
-                    if (ignoreCase)
-                        props.TryGetValue(keyName.ToLower(), out prop);
-                    else
-                        props.TryGetValue(keyName, out prop);
+
+                    props.TryGetValue(ignoreCase ? keyName.ToLower() : keyName, out prop);
+
                     if (prop != null)
                         ParseSetValue(reflected, prop, empty, throwException);
                 }
-
             }
 
             return empty;
         }
 
         /// <summary>
-        /// Uses ReflectionInfo to generate an instance of the set type populating the data using reflection.
+        ///     Uses ReflectionInfo to generate an instance of the set type populating the data using reflection.
         /// </summary>
         /// <typeparam name="T">
-        /// Object Type to create and populate
+        ///     Object Type to create and populate
         /// </typeparam>
         /// <param name="reflectedArray">
-        /// ReflectionInfo Key/Value Set
+        ///     ReflectionInfo Key/Value Set
         /// </param>
         /// <param name="ignoreCase">Ignore case on name matching if true</param>
         /// <param name="throwException">If populating a field match with a value fails throw an exception if true</param>
         /// <param name="removeSourceUnderscores">Remove underscores from source property names if true</param>
         /// <param name="bindingFlags">
-        /// BindingFlags in GetProperties Command Defaults to Public
+        ///     BindingFlags in GetProperties Command Defaults to Public
         /// </param>
         /// <returns>
-        /// New instance of T
+        ///     New instance of T
         /// </returns>
         public static T IntoSingle<T>(
-            this ReflectionInfo reflectedArray, bool ignoreCase = false, bool throwException = true, bool removeSourceUnderscores = false, BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance)
+            this ReflectionInfo reflectedArray, bool ignoreCase = false, bool throwException = true,
+            bool removeSourceUnderscores = false,
+            BindingFlags bindingFlags = DefaultBindings)
         {
             var empty = Activator.CreateInstance<T>();
             return UpdateSingle(reflectedArray, empty, ignoreCase, throwException, removeSourceUnderscores, bindingFlags);
         }
 
         /// <summary>
-        /// Prints out a reflected or mapped set of data into a single string for logging or debugging purposes.
+        ///     Prints out a reflected or mapped set of data into a single string for logging or debugging purposes.
         /// </summary>
         /// <param name="reflected">
-        /// ReflectionInfo Key/Value Set
+        ///     ReflectionInfo Key/Value Set
         /// </param>
         /// <returns>
-        /// Formatted string
+        ///     Formatted string
         /// </returns>
         public static string IntoSingleLineString(this ReflectionInfo reflected)
         {
@@ -198,14 +207,14 @@ namespace Funnel
         }
 
         /// <summary>
-        /// Uses each ReflectionInfo in the enumerable to generate a Datatable using the Type name as the table name,
-        /// the properties as columns and the set of property values as rows.
+        ///     Uses each ReflectionInfo in the enumerable to generate a Datatable using the Type name as the table name,
+        ///     the properties as columns and the set of property values as rows.
         /// </summary>
         /// <param name="reflectedItems">
-        /// IEnumerable of ReflectionInfo Key/Value Set
+        ///     IEnumerable of ReflectionInfo Key/Value Set
         /// </param>
         /// <returns>
-        /// DataTable populated with a row for each object
+        ///     DataTable populated with a row for each object
         /// </returns>
         public static DataTable IntoTable(this IEnumerable<ReflectionInfo> reflectedItems)
         {
@@ -220,9 +229,9 @@ namespace Funnel
                 dt.Columns.Add(dc);
             }
 
-            foreach (ReflectionInfo rows in reflectedArray)
+            foreach (var rows in reflectedArray)
             {
-                DataRow dr = dt.NewRow();
+                var dr = dt.NewRow();
                 foreach (var row in rows)
                     dr[row.Key.ToString()] = row.Value ?? DBNull.Value;
 
@@ -233,28 +242,28 @@ namespace Funnel
         }
 
         /// <summary>
-        /// Maps an enumerable of paired values to a Key / Value to allow setting properties via reflection in another object.
+        ///     Maps an enumerable of paired values to a Key / Value to allow setting properties via reflection in another object.
         /// </summary>
         /// <typeparam name="TReflected">
-        /// Enumerable of Enumerable of value pairs
+        ///     Enumerable of Enumerable of value pairs
         /// </typeparam>
         /// <typeparam name="TKey">
-        /// The Property Name selector type
+        ///     The Property Name selector type
         /// </typeparam>
         /// <typeparam name="TValue">
-        /// The Value selector type
+        ///     The Value selector type
         /// </typeparam>
         /// <param name="toMapArray">
-        /// Enumerable of value pairs
+        ///     Enumerable of value pairs
         /// </param>
         /// <param name="keySelector">
-        /// Selector for Property Name
+        ///     Selector for Property Name
         /// </param>
         /// <param name="valueSelector">
-        /// Selector for Value
+        ///     Selector for Value
         /// </param>
         /// <returns>
-        /// Enumerable of ReflectionInfo Key / Value Set
+        ///     Enumerable of ReflectionInfo Key / Value Set
         /// </returns>
         public static IEnumerable<ReflectionInfo> Map<TReflected, TKey, TValue>(
             this IEnumerable<IEnumerable<TReflected>> toMapArray,
@@ -265,13 +274,13 @@ namespace Funnel
         }
 
         /// <summary>
-        /// The map csv using header.
+        ///    Maps a 2d array using the first row as the property names.
         /// </summary>
         /// <param name="csvArray">
-        /// The csv array.
+        ///     The csv array.
         /// </param>
         /// <returns>
-        /// An Enumerable of ReflectionInfos
+        ///     An Enumerable of ReflectionInfos
         /// </returns>
         public static IEnumerable<ReflectionInfo> MapArrayUsingHeader(this IEnumerable<IEnumerable<string>> csvArray)
         {
@@ -280,11 +289,11 @@ namespace Funnel
             var rInfos = new List<ReflectionInfo>();
             foreach (var item in csvData.Skip(1))
             {
-                string[] itemA = item.ToArray();
+                var itemA = item.ToArray();
 
                 var rInfo = new ReflectionInfo { SourceType = item.GetType() };
 
-                for (int i = 0; i < (header.Count() > itemA.Count() ? itemA.Count() : header.Count()); i++)
+                for (var i = 0; i < (header.Count() > itemA.Count() ? itemA.Count() : header.Count()); i++)
                     rInfo[header[i]] = itemA[i];
 
                 rInfos.Add(rInfo);
@@ -294,28 +303,53 @@ namespace Funnel
         }
 
         /// <summary>
-        /// Maps 2D Enumerable of paired values to a Key / Value to allow setting properties via reflection in another object.
+        /// Maps a 2d array using a given header array. Order determines column position.
+        /// </summary>
+        /// <param name="csvArray">The csv array</param>
+        /// <param name="headers">Array of header strings</param>
+        /// <returns></returns>
+        public static IEnumerable<ReflectionInfo> MapArray(this IEnumerable<IEnumerable<string>> csvArray,params string[] headers)
+        {
+            var csvData = csvArray.ToList();
+            var header = headers;
+            var rInfos = new List<ReflectionInfo>();
+            foreach (var item in csvData.Skip(1))
+            {
+                var itemA = item.ToArray();
+
+                var rInfo = new ReflectionInfo { SourceType = item.GetType() };
+
+                for (var i = 0; i < (header.Count() > itemA.Count() ? itemA.Count() : header.Count()); i++)
+                    rInfo[header[i]] = itemA[i];
+
+                rInfos.Add(rInfo);
+            }
+            return rInfos.AsEnumerable();
+        }
+
+        /// <summary>
+        ///     Maps 2D Enumerable of paired values to a Key / Value to allow setting properties via reflection in another object.
         /// </summary>
         /// <typeparam name="TReflected">
-        /// Enumerable of Enumerable of value pairs
+        ///     Enumerable of Enumerable of value pairs
         /// </typeparam>
         /// <typeparam name="TKey">
-        /// The Property Name selector type
+        ///     The Property Name selector type
         /// </typeparam>
         /// <typeparam name="TValue">
-        /// The Value selector type
+        ///     The Value selector type
         /// </typeparam>
         /// <param name="toMap">
-        /// Enumerable of value pairs
+        ///     Enumerable of value pairs
         /// </param>
         /// <param name="keySelector">
-        /// Selector for Property Name
+        ///     Selector for Property Name
         /// </param>
         /// <param name="valueSelector">
-        /// Selector for Value
+        ///     Selector for Value
         /// </param>
         /// <returns>
-        /// The Mapping.Extensions+ReflectionInfo.
+        ///     The Mapping.Extensions+ReflectionInfo.
         /// </returns>
         public static ReflectionInfo MapSingle<TReflected, TKey, TValue>(
             this IEnumerable<TReflected> toMap,
@@ -333,88 +367,83 @@ namespace Funnel
         }
 
         /// <summary>
-        /// Parse an enumerable of strings as a Csv using the given delimiter. The delimiter can exist between quotes
-        /// it will not be seperated.
+        ///     Parse an enumerable of strings as a Csv using the given delimiter. The delimiter can exist between quotes
+        ///     it will not be seperated.
         /// </summary>
         /// <param name="csvArray">The IEnumerable of strings</param>
         /// <param name="delimiter">The delimeter</param>
         /// <returns>A 2D Enumerable of strings</returns>
-        public static IEnumerable<IEnumerable<string>> ParseCsv(this IEnumerable<string> csvArray, char delimiter)
+        public static IEnumerable<IEnumerable<string>> ParseDelimited(this IEnumerable<string> csvArray, char delimiter)
         {
-            return csvArray.Select(line => ParseCsvLine(line, delimiter));
+            return csvArray.Select(line => ParseDelimitedLine(line, delimiter));
         }
 
         /// <summary>
-        /// Parse an enumerable of strings as a Csv using the given delimiter. The delimiter can exist between quotes
-        /// it will not be seperated.
+        ///     Parse an enumerable of strings as a Csv using the given delimiter. The delimiter can exist between quotes
+        ///     it will not be seperated.
         /// </summary>
         /// <param name="csvArray">The IEnumerable of strings</param>
         /// <param name="columnWidths">Array of column width</param>
         /// <returns>A 2D Enumerable of strings</returns>
-        public static IEnumerable<IEnumerable<string>> ParseFixedWidth(this IEnumerable<string> csvArray, params int[] columnWidths)
+        public static IEnumerable<IEnumerable<string>> ParseFixedWidth(this IEnumerable<string> csvArray,
+                                                                       params int[] columnWidths)
         {
             return csvArray.Select(line => ParseFixedColumnLine(line, columnWidths));
         }
 
         /// <summary>
-        /// Iterates through each property of each object in the enumerable and generates an enumerable of enumerables of Key / Value pairs
-        /// to allow setting properties via reflection in another object.
+        ///     Iterates through each property of each object in the enumerable and generates an enumerable of enumerables of Key / Value pairs
+        ///     to allow setting properties via reflection in another object.
         /// </summary>
         /// <param name="toReflectArray">
-        /// Enumerable of objects to reflect
+        ///     Enumerable of objects to reflect
         /// </param>
         /// <param name="bindingFlags">
-        /// BindingFlags in GetProperties Command Defaults to Public
+        ///     BindingFlags in GetProperties Command Defaults to Public
         /// </param>
         /// <returns>
-        /// Enumerable of ReflectionInfo Key / Value Set
+        ///     Enumerable of ReflectionInfo Key / Value Set
         /// </returns>
-        public static IEnumerable<ReflectionInfo> Reflect(
-            this IEnumerable<object> toReflectArray,
-            BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance)
+        public static IEnumerable<ReflectionInfo> Reflect(this IEnumerable<object> toReflectArray, BindingFlags bindingFlags = DefaultBindings)
         {
             return toReflectArray.Select(b => b.ReflectSingle(bindingFlags));
         }
 
         /// <summary>
-        /// Iterates through the properties in an object and creates a Key / Value set to allow setting properties via reflection in another object.
+        ///     Iterates through the properties in an object and creates a Key / Value set to allow setting properties via reflection in another object.
         /// </summary>
         /// <param name="toReflect">
-        /// Object to reflect
+        ///     Object to reflect
         /// </param>
         /// <param name="bindingFlags">
-        /// BindingFlags in GetProperties Command Defaults to Public
+        ///     BindingFlags in GetProperties Command Defaults to Public
         /// </param>
         /// <returns>
-        /// ReflectionInfo Key / Value Set
+        ///     ReflectionInfo Key / Value Set
         /// </returns>
         public static ReflectionInfo ReflectSingle(
-            this object toReflect, BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance)
+            this object toReflect, BindingFlags bindingFlags = DefaultBindings)
         {
-            ReflectionInfo rInfo;
             var reflectType = toReflect.GetType();
             var props = reflectType.GetProperties(bindingFlags);
-            rInfo = new ReflectionInfo
-                {
-                    SourceType = reflectType
-                };
+
+            var rInfo = new ReflectionInfo { SourceType = reflectType };
+
             foreach (var prop in props)
-            {
-                rInfo.Add(prop.Name, prop.GetValue(toReflect, new object[]
-                    {
-                    }));
-            }
+                rInfo.Add(prop.Name, prop.GetValue(toReflect, null));
+
             return rInfo;
         }
 
         #endregion
 
         #region Methods
+
         private static IEnumerable<string> ParseFixedColumnLine(string line, IEnumerable<int> columnWidths)
         {
             var lineArray = new List<string>();
             int lastIndex = 0;
-            foreach (var w in columnWidths)
+            foreach (int w in columnWidths)
             {
                 if (lastIndex + w > line.Length)
                     lineArray.Add(line.Substring(lastIndex).Trim(' '));
@@ -425,10 +454,10 @@ namespace Funnel
             return lineArray;
         }
 
-        private static IEnumerable<string> ParseCsvLine(string line, char delimiter)
+        private static IEnumerable<string> ParseDelimitedLine(string line, char delimiter)
         {
-            var csvLine = line.Trim();
-            var inQuote = false;
+            string csvLine = line.Trim();
+            bool inQuote = false;
             var lineArray = new List<string>();
             var currentEntry = new List<char>();
             foreach (char c in csvLine)
@@ -451,13 +480,14 @@ namespace Funnel
         }
 
         /// <summary>
-        /// Method to parse a value using a TypeConverter via reflection
+        ///     Method to parse a value using a TypeConverter via reflection
         /// </summary>
         /// <param name="reflected">The Pair to use when setting</param>
         /// <param name="prop">The property to set</param>
         /// <param name="empty">Empty object that will have its property set.</param>
         /// <param name="throwException">Throw exception on a failed value set</param>
-        private static void ParseSetValue(KeyValuePair<object, object> reflected, PropertyInfo prop, object empty, bool throwException)
+        private static void ParseSetValue(KeyValuePair<object, object> reflected, PropertyInfo prop, object empty,
+                                          bool throwException)
         {
             try
             {
@@ -474,12 +504,11 @@ namespace Funnel
                         cach(empty, reflected.Value);
                     else
                     {
-                        TypeConverter converter = TypeDescriptor.GetConverter(prop.PropertyType);
+                        var converter = TypeDescriptor.GetConverter(prop.PropertyType);
                         if (reflected.Value is string)
                         {
                             if (String.IsNullOrEmpty(reflected.Value.ToString()))
                                 return;
-
                         }
                         cach(empty, converter.ConvertFrom(reflected.Value));
                     }
@@ -496,12 +525,13 @@ namespace Funnel
                 Debug.WriteLine(ex.ToString());
             }
         }
-        static Action<object, object> BuildSetAccessor(MethodInfo method)
-        {
-            var obj = Expression.Parameter(typeof(object), "o");
-            var value = Expression.Parameter(typeof(object));
 
-            var expr =
+        private static Action<object, object> BuildSetAccessor(MethodInfo method)
+        {
+            ParameterExpression obj = Expression.Parameter(typeof(object), "o");
+            ParameterExpression value = Expression.Parameter(typeof(object));
+
+            Expression<Action<object, object>> expr =
                 Expression.Lambda<Action<object, object>>(
                     Expression.Call(
                         Expression.Convert(obj, method.DeclaringType),
@@ -515,27 +545,31 @@ namespace Funnel
 
 
         /// <summary>
-        /// Maps the data table to an enumartable of <see cref="ReflectionInfo"/> objects.
+        ///     Maps the data table to an enumartable of <see cref="ReflectionInfo" /> objects.
         /// </summary>
         /// <param name="toReflectTable">The DataTable to map.</param>
-        /// <returns>Returns an enumerable of <see cref="ReflectionInfo"/> objects, populated with data from the rows.</returns>
+        /// <returns>
+        ///     Returns an enumerable of <see cref="ReflectionInfo" /> objects, populated with data from the rows.
+        /// </returns>
         public static IEnumerable<ReflectionInfo> MapDataTable(this DataTable toReflectTable)
         {
             return from DataRow toReflect in toReflectTable.Rows select toReflect.MapDataRow();
         }
 
         /// <summary>
-        /// Maps the data row to a <see cref="ReflectionInfo"/> object.
+        ///     Maps the data row to a <see cref="ReflectionInfo" /> object.
         /// </summary>
         /// <param name="toReflect">The DataRow to map.</param>
-        /// <returns>Returns an enumerable of <see cref="ReflectionInfo"/> objects, populated with data from the row</returns>
+        /// <returns>
+        ///     Returns an enumerable of <see cref="ReflectionInfo" /> objects, populated with data from the row
+        /// </returns>
         public static ReflectionInfo MapDataRow(this DataRow toReflect)
         {
             var rInfo = new ReflectionInfo
-            {
-                SourceType = toReflect.GetType()
-            };
-            for (var i = 0; i < toReflect.Table.Columns.Count; i++)
+                {
+                    SourceType = toReflect.GetType()
+                };
+            for (int i = 0; i < toReflect.Table.Columns.Count; i++)
             {
                 rInfo.Add(toReflect.Table.Columns[i].ColumnName, toReflect[i]);
             }
@@ -543,7 +577,7 @@ namespace Funnel
         }
 
         /// <summary>
-        /// Creates a dictionary the keys set to the property/column names.
+        ///     Creates a dictionary the keys set to the property/column names.
         /// </summary>
         /// <param name="reflected">The Reflection Info object to convert to a Dynamic object.</param>
         /// <returns>Dictionary</returns>
@@ -553,17 +587,18 @@ namespace Funnel
         }
 
         /// <summary>
-        /// Creates an IEnumerable of dictionaries with the property/column names as keys.
+        ///     Creates an IEnumerable of dictionaries with the property/column names as keys.
         /// </summary>
         /// <param name="reflectionArray">The reflected array to convert.</param>
         /// <returns>IEnumerable of Dictionaries</returns>
-        public static IEnumerable<Dictionary<string, object>> IntoDictionary(this IEnumerable<ReflectionInfo> reflectionArray)
+        public static IEnumerable<Dictionary<string, object>> IntoDictionary(
+            this IEnumerable<ReflectionInfo> reflectionArray)
         {
             return reflectionArray.Select(rInfo => rInfo.IntoSingleDictionary());
         }
 
         /// <summary>
-        /// Converts some reflection info into an enumeration of a Dynamic object.
+        ///     Converts some reflection info into an enumeration of a Dynamic object.
         /// </summary>
         /// <param name="reflectedArray">The reflected array to convert.</param>
         /// <returns>An enumerable of dynamic objects.</returns>
@@ -573,7 +608,7 @@ namespace Funnel
         }
 
         /// <summary>
-        /// Converts some reflection info into a Dynamic object.
+        ///     Converts some reflection info into a Dynamic object.
         /// </summary>
         /// <param name="reflected">The Reflection Info object to convert to a Dynamic object.</param>
         /// <returns>A dynamic object with properties corresponding to the reflection info.</returns>
@@ -582,25 +617,28 @@ namespace Funnel
             var dynamicObject = new DynamicEntity();
             foreach (var keyValuePair in reflected)
             {
-                var tempReflected = keyValuePair; // Needs to happen or it could produce race conditions.
-                var explicitMapping = reflected.MappedColumns.FirstOrDefault(x => (string) x.Key == tempReflected.Key.ToString());
-                
-                if (explicitMapping.Value!=null)
+                KeyValuePair<object, object> tempReflected = keyValuePair;
+                // Needs to happen or it could produce race conditions.
+                KeyValuePair<object, List<MappedColumn>> explicitMapping =
+                    reflected.MappedColumns.FirstOrDefault(x => (string)x.Key == tempReflected.Key.ToString());
+
+                if (explicitMapping.Value != null)
                 {
-                    foreach (var eMapping in explicitMapping.Value)
+                    foreach (MappedColumn eMapping in explicitMapping.Value)
                     {
                         if (eMapping.Converter != null)
                         {
                             if (typeof(IMappingConverter).IsAssignableFrom(eMapping.Converter))
                             {
                                 var converter = (IMappingConverter)Activator.CreateInstance(eMapping.Converter);
-                                dynamicObject[eMapping.Target] = converter.ConversionMethod(keyValuePair.Value.ToString());
+                                dynamicObject[eMapping.Target] =
+                                    converter.ConversionMethod(keyValuePair.Value.ToString());
                             }
                             else
                                 throw new Exception("Converter Type not a valid IMappingConverter");
                         }
                         else
-                            dynamicObject[keyValuePair.Key.ToString()] = keyValuePair.Value;
+                            dynamicObject[eMapping.Target] = keyValuePair.Value;
                     }
                 }
                 else
