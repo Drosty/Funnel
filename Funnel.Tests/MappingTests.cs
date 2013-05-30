@@ -11,10 +11,12 @@ namespace Funnel.Tests
     [TestFixture]
     public class MappingTests
     {
-        [Test(Description = "Test reflecting an object into another")]
-        public void ReflectIntoSingle()
+        private List<StarcraftModel> _testArray = null;
+        private StarcraftModel _testItem = null;
+        [SetUp]
+        public void Setup()
         {
-            var testObject = new StarcraftModel
+            _testItem = new StarcraftModel
             {
                 Gas = 1,
                 Mineral = 2,
@@ -23,8 +25,43 @@ namespace Funnel.Tests
                 Time = "20",
                 Unit = "Test"
             };
+            _testArray = new List<StarcraftModel>()
+                {
+                    new StarcraftModel
+                        {
+                            Gas = 1,
+                            Mineral = 2,
+                            Race = "Protoss",
+                            Supply = "1",
+                            Time = "20",
+                            Unit = "Test"
+                        },
+                    new StarcraftModel
+                        {
+                            Gas = 2,
+                            Mineral = 3,
+                            Race = "Protoss",
+                            Supply = "2",
+                            Time = "21",
+                            Unit = "Test 1"
+                        },
+                    new StarcraftModel
+                        {
+                            Gas = 3,
+                            Mineral = 4,
+                            Race = "Protoss",
+                            Supply = "2",
+                            Time = "22",
+                            Unit = "Test 2"
+                        },
+                };
+        }
+        [Test(Description = "Test reflecting an object into another")]
+        public void ReflectIntoSingle()
+        {
 
-            var starcraftDataItem = testObject.Funnel().Into<StarcraftDataItem>();
+
+            var starcraftDataItem = _testItem.Funnel().Into<StarcraftDataItem>();
 
             Assert.That(starcraftDataItem.Gas, Is.EqualTo(1));
             Assert.That(starcraftDataItem.Mineral, Is.EqualTo(2));
@@ -40,38 +77,9 @@ namespace Funnel.Tests
         [Test(Description = "Test reflecting an IEnumerable of objects into an IEnumerable of another object")]
         public void ReflectInto()
         {
-            var items = new List<StarcraftModel>()
-                {
-                    new StarcraftModel
-                        {
-                            Gas = 1,
-                            Mineral = 2,
-                            Race = "Protoss",
-                            Supply = "1",
-                            Time = "20",
-                            Unit = "Test"
-                        },
-                    new StarcraftModel
-                        {
-                            Gas = 2,
-                            Mineral = 3,
-                            Race = "Protoss",
-                            Supply = "2",
-                            Time = "21",
-                            Unit = "Test 1"
-                        },
-                    new StarcraftModel
-                        {
-                            Gas = 3,
-                            Mineral = 4,
-                            Race = "Protoss",
-                            Supply = "2",
-                            Time = "22",
-                            Unit = "Test 2"
-                        },
-                };
 
-            var starcraftDataItems = items.FunnelArray().IntoMany<StarcraftDataItem>().ToArray();
+
+            var starcraftDataItems = _testArray.FunnelArray().IntoMany<StarcraftDataItem>().ToArray();
 
             Assert.That(starcraftDataItems.Length, Is.EqualTo(3));
 
@@ -82,38 +90,8 @@ namespace Funnel.Tests
         [Test(Description = "Test reflecting into a dynamic object")]
         public void ReflectIntoDynamics()
         {
-            var items = new List<StarcraftModel>()
-                {
-                    new StarcraftModel
-                        {
-                            Gas = 1,
-                            Mineral = 2,
-                            Race = "Protoss",
-                            Supply = "1",
-                            Time = "20",
-                            Unit = "Test"
-                        },
-                    new StarcraftModel
-                        {
-                            Gas = 2,
-                            Mineral = 3,
-                            Race = "Protoss",
-                            Supply = "2",
-                            Time = "21",
-                            Unit = "Test 1"
-                        },
-                    new StarcraftModel
-                        {
-                            Gas = 3,
-                            Mineral = 4,
-                            Race = "Protoss",
-                            Supply = "2",
-                            Time = "22",
-                            Unit = "Test 2"
-                        },
-                };
 
-            var starcraftDataItems = items.FunnelArray().IntoDynamics().ToArray();
+            var starcraftDataItems = _testArray.FunnelArray().IntoDynamics().ToArray();
 
             Assert.That(starcraftDataItems.Length, Is.EqualTo(3));
 
@@ -124,17 +102,8 @@ namespace Funnel.Tests
         [Test(Description = "Test reflection using explicit column mapping")]
         public void ReflectSingleWithExplicitMapping()
         {
-            var testObject = new StarcraftModel
-            {
-                Gas = 1,
-                Mineral = 2,
-                Race = "Protoss",
-                Supply = "1",
-                Time = "20",
-                Unit = "Test"
-            };
 
-            var starcraftDataItem = testObject
+            var starcraftDataItem = _testItem
                 .Funnel()
                 .AddExplicitMapping("Unit","Other")
                 .Into<StarcraftDataItem>();
@@ -153,17 +122,8 @@ namespace Funnel.Tests
         [Test(Description = "Test into dynamic using explicit column mapping")]
         public void ReflectIntoDynamicWithExplicitColumnMapping()
         {
-            var testObject = new StarcraftModel
-            {
-                Gas = 1,
-                Mineral = 2,
-                Race = "Protoss",
-                Supply = "1",
-                Time = "20",
-                Unit = "Test"
-            };
 
-            var starcraftDataItem = testObject
+            var starcraftDataItem = _testItem
                 .Funnel()
                 .AddExplicitMapping("Unit", "Other")
                 .IntoDynamic();
